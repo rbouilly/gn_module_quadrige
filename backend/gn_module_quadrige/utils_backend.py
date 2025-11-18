@@ -4,6 +4,8 @@ import json
 import datetime
 import tempfile
 import requests
+from flask import current_app
+
 
 # -------------------------
 # Dossiers de travail (dans /tmp pour un module externe)
@@ -17,10 +19,10 @@ LAST_FILTER_FILE = os.path.join(MEMORY_DIR, "last_filter.json")
 os.makedirs(MEMORY_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DATA_DIR, exist_ok=True)
 
-print("\n[QUADRIGE BACKEND] 🚀 Initialisation")
-print(f"[QUADRIGE BACKEND] BASE_DIR        = {BASE_DIR}")
-print(f"[QUADRIGE BACKEND] MEMORY_DIR      = {MEMORY_DIR}")
-print(f"[QUADRIGE BACKEND] OUTPUT_DATA_DIR = {OUTPUT_DATA_DIR}\n")
+current_app.logger.info("\n[QUADRIGE BACKEND] 🚀 Initialisation")
+current_app.logger.info(f"[QUADRIGE BACKEND] BASE_DIR        = {BASE_DIR}")
+current_app.logger.info(f"[QUADRIGE BACKEND] MEMORY_DIR      = {MEMORY_DIR}")
+current_app.logger.info(f"[QUADRIGE BACKEND] OUTPUT_DATA_DIR = {OUTPUT_DATA_DIR}\n")
 
 
 def get_output_path(filename):
@@ -37,9 +39,9 @@ def nettoyer_dossier_memory() -> None:
             chemin = os.path.join(MEMORY_DIR, fichier)
             if fichier != "last_filter.json" and os.path.isfile(chemin):
                 os.remove(chemin)
-                print(f"[QUADRIGE BACKEND] 🧹 Fichier supprimé : {fichier}")
+                current_app.logger.info(f"[QUADRIGE BACKEND] 🧹 Fichier supprimé : {fichier}")
     except Exception as e:
-        print(f"[QUADRIGE BACKEND] ⚠️ Erreur nettoyage MEMORY_DIR : {e}")
+        current_app.logger.info(f"[QUADRIGE BACKEND] ⚠️ Erreur nettoyage MEMORY_DIR : {e}")
 
 
 def nettoyer_output_data() -> None:
@@ -52,9 +54,9 @@ def nettoyer_output_data() -> None:
             path = os.path.join(OUTPUT_DATA_DIR, f)
             if os.path.isfile(path):
                 os.remove(path)
-                print(f"[QUADRIGE BACKEND] 🧹 Fichier supprimé : {f}")
+                current_app.logger.info(f"[QUADRIGE BACKEND] 🧹 Fichier supprimé : {f}")
     except Exception as e:
-        print(f"[QUADRIGE BACKEND] ⚠️ Erreur nettoyage OUTPUT_DATA_DIR : {e}")
+        current_app.logger.info(f"[QUADRIGE BACKEND] ⚠️ Erreur nettoyage OUTPUT_DATA_DIR : {e}")
 
 
 def name_extraction_data(programmes, download_links, filter_data, monitoring_location):
@@ -93,10 +95,10 @@ def name_extraction_data(programmes, download_links, filter_data, monitoring_loc
                     "url": f"/quadrige/output_data/{safe_filename}",
                 }
             )
-            print(f"[QUADRIGE BACKEND] 💾 Fichier sauvegardé : {safe_filename}")
+            current_app.logger.info(f"[QUADRIGE BACKEND] 💾 Fichier sauvegardé : {safe_filename}")
 
         except Exception as e:
-            print(f"[QUADRIGE BACKEND] ⚠️ Erreur téléchargement {prog}: {e}")
+            current_app.logger.info(f"[QUADRIGE BACKEND] ⚠️ Erreur téléchargement {prog}: {e}")
 
     return renamed_files
 
@@ -108,7 +110,7 @@ def sauvegarder_filtre(program_filter: dict) -> None:
     os.makedirs(MEMORY_DIR, exist_ok=True)
     with open(LAST_FILTER_FILE, "w", encoding="utf-8") as f:
         json.dump(program_filter, f)
-    print(f"[QUADRIGE BACKEND] 💾 Filtre sauvegardé dans {LAST_FILTER_FILE}")
+    current_app.logger.info(f"[QUADRIGE BACKEND] 💾 Filtre sauvegardé dans {LAST_FILTER_FILE}")
 
 
 def charger_filtre() -> dict:

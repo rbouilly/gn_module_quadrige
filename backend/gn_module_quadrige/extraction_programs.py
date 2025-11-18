@@ -54,7 +54,7 @@ def extract_programs(filter_data: dict):
         response = client.execute(query)
         task = response["executeProgramExtraction"]
         task_id = task["id"]
-        print(
+        current_app.logger.info(
             f"[extract_programs] ✅ Extraction lancée (id={task_id}, nom={task['name']})"
         )
     except Exception as e:
@@ -78,11 +78,11 @@ def extract_programs(filter_data: dict):
         status_resp = client.execute(status_query, variable_values={"id": task_id})
         extraction = status_resp["getExtraction"]
         status = extraction["status"]
-        print(f"[extract_programs] Statut : {status}")
+        current_app.logger.info(f"[extract_programs] Statut : {status}")
 
         if status == "SUCCESS":
             file_url = extraction["fileUrl"]
-            print(f"[extract_programs] ✅ Fichier disponible : {file_url}")
+            current_app.logger.info(f"[extract_programs] ✅ Fichier disponible : {file_url}")
         elif status in ["PENDING", "RUNNING"]:
             time.sleep(2)
         else:

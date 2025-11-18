@@ -33,16 +33,16 @@ def extract_ifremer_data(programmes, filter_data):
 
 
     for p in programmes:
-        print(f"[extract_ifremer_data] Programme : {p}")
+        current_app.logger.info(f"[extract_ifremer_data] Programme : {p}")
 
         # 1) Lancer la tâche d’extraction
         try:
             execute_query = build_extraction_query(p, filter_data)
             response = client.execute(execute_query)
             task_id = response["executeResultExtraction"]["id"]
-            print(f"   Extraction lancée (id: {task_id})")
+            current_app.logger.info(f"   Extraction lancée (id: {task_id})")
         except Exception as e:
-            print(f"   ❌ Erreur lors de l'extraction {p} : {e}")
+            current_app.logger.info(f"   ❌ Erreur lors de l'extraction {p} : {e}")
             continue
 
         # 2) Suivi du statut
@@ -65,15 +65,15 @@ def extract_ifremer_data(programmes, filter_data):
             )
             extraction = status_response["getExtraction"]
             status = extraction["status"]
-            print(f"    Statut: {status}")
+            current_app.logger.info(f"    Statut: {status}")
 
             if status == "SUCCESS":
                 file_url = extraction["fileUrl"]
-                print(f"     ✅ Fichier disponible : {file_url}")
+                current_app.logger.info(f"     ✅ Fichier disponible : {file_url}")
             elif status in ["PENDING", "RUNNING"]:
                 time.sleep(2)
             else:
-                print(f"     ❌ Tâche en erreur : {extraction.get('error')}")
+                current_app.logger.info(f"     ❌ Tâche en erreur : {extraction.get('error')}")
                 break
 
         if not file_url:
@@ -86,9 +86,9 @@ def extract_ifremer_data(programmes, filter_data):
             r.raise_for_status()
             with open(zip_path, "wb") as f:
                 f.write(r.content)
-            print(f"     💾 ZIP téléchargé localement : {zip_path}")
+            current_app.logger.info(f"     💾 ZIP téléchargé localement : {zip_path}")
         except Exception as e:
-            print(f"     ⚠️ Erreur lors du téléchargement : {e}")
+            current_app.logger.info(f"     ⚠️ Erreur lors du téléchargement : {e}")
 
         download_links.append(file_url)
 
