@@ -9,5 +9,5 @@ MODULE_PICTO = "static/quadrige.png"  # chemin relatif dans le frontend GeoNatur
 
 # Exposition des éléments pour les entry_points du setup.py
 from .blueprint import blueprint          # Blueprint Flask (routes API)
-from .conf_schema_toml import GnModuleSchemaConf  # Schéma de config TOML
+from .config_schema_toml import GnModuleSchemaConf  # Schéma de config TOML
 from . import migrations                  # Dossier Alembic (optionnel, mais prêt)
