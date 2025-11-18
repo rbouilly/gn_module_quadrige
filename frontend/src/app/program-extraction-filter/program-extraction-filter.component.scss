@@ -1,0 +1,7 @@
+/* Styles spécifiques au composant si besoin */
+:host {
+  display: block;
+}
+
+/* Tous les styles de .filter-card, .code, etc.
+   viennent déjà de src/styles.scss */

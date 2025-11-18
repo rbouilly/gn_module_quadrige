@@ -1,0 +1,164 @@
+<div class="container">
+  <!-- 💡 Ajout de la classe header-card pour l'en-tête -->
+  <div class="card header-card shadow-sm">
+ <!-- 🏷️ Titre -->
+    <h2 class="header-title">Programmes à extraire</h2>
+
+    <!-- 🔍 Barre de recherche améliorée -->
+<div class="search-bar mb-4">
+  <mat-form-field
+  appearance="outline"
+  class="search-field"
+  [class.active]="searchText && searchText.length > 0"
+>
+  <mat-icon matPrefix color="primary">search</mat-icon>
+  <input
+    matInput
+    [(ngModel)]="searchText"
+    placeholder="Rechercher un programme..."
+    type="text"
+  />
+  <button
+    *ngIf="searchText"
+    mat-icon-button
+    matSuffix
+    (click)="searchText = ''"
+    aria-label="Effacer la recherche"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-form-field>
+</div>
+
+
+    <!-- 🎛️ Boutons d’action -->
+  <div class="program-buttons">
+    <button mat-raised-button class="button-success"
+            (click)="extractData()"
+            [disabled]="isLoading">
+      <mat-icon>cloud_download</mat-icon>
+      Extraire les données
+    </button>
+
+    <button mat-raised-button color="primary"
+            (click)="openDataFilter()"
+            [disabled]="isLoading">
+      <mat-icon>tune</mat-icon>
+      Filtre extraction données
+    </button>
+
+    <button mat-raised-button class="button-success"
+            (click)="extractPrograms()"
+            [disabled]="isLoading">
+      <mat-icon>download</mat-icon>
+      Extraire les programmes
+    </button>
+
+    <button mat-raised-button color="primary"
+            (click)="openProgramFilter()"
+            [disabled]="isLoading">
+      <mat-icon>filter_alt</mat-icon>
+      Filtre programmes
+    </button>
+  </div>
+
+  <!-- 🌐 Filtres -->
+  <app-frontend-filter
+    *ngIf="showDataFilter"
+    (apply)="onDataFilterApplied($event)"
+    (close)="showDataFilter = false">
+  </app-frontend-filter>
+
+  <app-program-extraction-filter
+    *ngIf="showProgramFilter"
+    (apply)="onProgramFilterApplied($event)"
+    (close)="showProgramFilter = false">
+  </app-program-extraction-filter>
+</div>
+
+
+  <!-- 🪄 Message d’état -->
+  <p class="text-center text-muted mb-3">{{ message }}</p>
+
+  <!-- 🌍 Bandeau d'information sur la localisation -->
+  <div *ngIf="monitoringLocation" class="monitoring-banner mb-4">
+    <mat-icon color="primary">place</mat-icon>
+    <div>
+      <strong>Lieu de surveillance :</strong><br />
+      <span class="code">{{ monitoringLocation }}</span>
+      <span *ngIf="monitoringLabel" class="label">({{ monitoringLabel }})</span>
+    </div>
+  </div>
+
+  <!-- 📋 Tableau des programmes (version Angular Material) -->
+<div class="table-container mat-elevation-z2">
+  <table mat-table [dataSource]="filteredProgrammes" class="mat-elevation-z1" matSort>
+
+    <!-- Sélection -->
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox [(ngModel)]="allSelected" (change)="toggleAll()"></mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let prog">
+        <mat-checkbox [(ngModel)]="prog.checked"></mat-checkbox>
+      </td>
+    </ng-container>
+
+    <!-- Nom -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Programme</th>
+      <td mat-cell *matCellDef="let prog">{{ prog.name }}</td>
+    </ng-container>
+
+    <!-- Libellé -->
+    <ng-container matColumnDef="libelle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Libellé</th>
+      <td mat-cell *matCellDef="let prog">{{ prog.libelle }}</td>
+    </ng-container>
+
+    <!-- Date de création -->
+    <ng-container matColumnDef="startDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date de début</th>
+      <td mat-cell *matCellDef="let prog">{{ prog.startDate || '—' }}</td>
+    </ng-container>
+
+    <!-- État -->
+    <ng-container matColumnDef="etat">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>État</th>
+      <td mat-cell *matCellDef="let prog">{{ prog.etat || '' }}</td>
+    </ng-container>
+
+    <!-- Responsable -->
+    <ng-container matColumnDef="responsable">
+      <th mat-header-cell *matHeaderCellDef>Responsables</th>
+      <td mat-cell *matCellDef="let prog">{{ prog.responsable || '' }}</td>
+    </ng-container>
+
+    <!-- En-têtes et lignes -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+
+  <!-- 📊 Liens de fichiers extraits -->
+  <app-extracted-links
+    [files]="extractedProgramFiles"
+    title="Programmes extraits">
+  </app-extracted-links>
+
+  <app-extracted-links
+    [files]="extractedDataFiles"
+    title="Données extraites">
+  </app-extracted-links>
+
+  <!-- 🔁 Relancer le filtrage seul -->
+  <div class="text-center mt-4">
+    <button mat-raised-button color="primary"
+            (click)="relancerFiltrageSeul()"
+            [disabled]="isLoading">
+      <mat-icon>autorenew</mat-icon>
+      Relancer uniquement le filtrage
+    </button>
+  </div>
+</div>

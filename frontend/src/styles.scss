@@ -1,1 +1,154 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+/* =====================================================
+   🎨 Thème principal Angular Material (Material 2)
+   ===================================================== */
+
+// Palette Material
+$primary: mat.define-palette(mat.$blue-palette);
+$accent:  mat.define-palette(mat.$light-blue-palette);
+$warn:    mat.define-palette(mat.$red-palette);
+
+// Thème Material
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn
+  ),
+));
+
+// Applique le thème
+@include mat.all-component-themes($theme);
+
+/* =====================================================
+   🌍 Style global GeoNature
+   ===================================================== */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: #f5f7fa;
+  color: #333;
+}
+
+.container {
+  padding: 1.5rem 2rem;
+}
+
+/* =====================================================
+   🔘 Boutons
+   ===================================================== */
+
+button[mat-raised-button] {
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: none;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  mat-icon {
+    margin-right: 0.3rem;
+  }
+}
+
+.button-success {
+  background-color: #43a047 !important;
+  color: #fff !important;
+
+  &:hover {
+    background-color: #388e3c !important;
+  }
+}
+
+/* =====================================================
+   🧩 Cartes des filtres
+   ===================================================== */
+
+.filter-card {
+  position: absolute;
+  right: 20px;
+  top: 100px;
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  width: 480px;
+  z-index: 2000;
+
+  animation: fadeIn 0.3s ease-in-out;
+
+  h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+    text-align: center;
+    color: #333;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   💬 Messages d’erreur
+   ===================================================== */
+
+.error-msg {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  font-style: italic;
+  animation: fadeError 0.25s ease-in-out;
+}
+
+@keyframes fadeError {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   🧱 Chips + Period Row
+   ===================================================== */
+
+mat-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-height: 40px;
+}
+
+mat-chip-row {
+  background: #e9f5ff;
+  color: #0a2a3a;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.period-row {
+  display: flex;
+  gap: 1rem;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+/* =====================================================
+   ⚙️ Overlay Material
+   ===================================================== */
+
+.cdk-overlay-container,
+.cdk-overlay-pane {
+  z-index: 3000 !important;
+}

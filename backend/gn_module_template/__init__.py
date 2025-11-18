@@ -1,2 +1,0 @@
-MODULE_CODE = 'TEMPLATE'
-MODULE_PICTO = 'fa-campground'

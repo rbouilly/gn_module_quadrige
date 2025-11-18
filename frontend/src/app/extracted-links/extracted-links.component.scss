@@ -1,0 +1,117 @@
+/* --- Animation fade-in --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Carte principale --- */
+.card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 1rem 1.5rem;
+  margin-top: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.6s ease-in-out;
+  transition: box-shadow 0.3s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+/* --- Titre --- */
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #004080;
+  border-bottom: 2px solid #007bff;
+  display: inline-block;
+  padding-bottom: 0.25rem;
+}
+
+/* --- Liste --- */
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card li {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.card li:hover {
+  background: #eef5ff;
+  transform: translateX(4px);
+}
+
+/* --- Info fichier + icône --- */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-icon {
+  font-size: 1.3rem;
+  display: inline-block;
+}
+
+/* --- Styles d'icônes --- */
+.icon-csv::before {
+  content: "📊";
+}
+
+.icon-zip::before {
+  content: "📦";
+}
+
+.icon-json::before {
+  content: "🧾";
+}
+
+.icon-link::before,
+.icon-generic::before {
+  content: "🔗";
+}
+
+/* --- Lien --- */
+.card a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
+
+/* --- Nom du fichier --- */
+.card strong {
+  font-weight: 600;
+  color: #000;
+  margin-right: 0.5rem;
+}
+
+/* --- Texte vide --- */
+.card p {
+  font-size: 0.95rem;
+  color: #666;
+  font-style: italic;
+  margin: 0.5rem 0 0;
+}
