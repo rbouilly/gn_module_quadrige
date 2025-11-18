@@ -43,6 +43,79 @@ def nettoyer_dossier_memory() -> None:
     except Exception as e:
         print(f"[QUADRIGE BACKEND] ⚠️ Erreur nettoyage MEMORY_DIR : {e}")
 
+def nettoyer_csv(input_path, output_path, monitoring_location_prefix: str):
+    """
+    Nettoie le CSV extrait depuis Ifremer pour ne garder que :
+      - les lignes où 'Lieu : Mnémonique' commence par le préfixe monitoring_location_prefix
+      - les colonnes importantes pour le frontend
+      - une seule occurrence de chaque 'Programme : Code'
+    """
+    import pandas as pd
+
+    # Lecture du CSV brut
+    df = pd.read_csv(input_path, sep=";", dtype=str)
+
+    # Colonnes obligatoires
+    colonnes_requises = [
+        "Lieu : Mnémonique",
+        "Programme : Code",
+        "Programme : Libellé",
+        "Programme : Etat",
+        "Programme : Date de création",
+        "Programme : Droit : Personne : Responsable : NOM Prénom : Liste",
+    ]
+
+    # Vérification colonnes
+    for col in colonnes_requises:
+        if col not in df.columns:
+            raise ValueError(f"❌ Colonne manquante dans le CSV extrait : {col}")
+
+    # Filtrage par préfixe du monitoring location
+    df_filtre = df[
+        df["Lieu : Mnémonique"].str.startswith(monitoring_location_prefix, na=False)
+    ]
+
+    # Colonnes conservées
+    df_reduit = df_filtre[colonnes_requises]
+
+    # Suppression des doublons (par code programme)
+    df_unique = df_reduit.drop_duplicates(subset=["Programme : Code"])
+
+    # Sauvegarde CSV nettoyé
+    df_unique.to_csv(output_path, sep=";", index=False)
+
+    print(f"[QUADRIGE BACKEND] 🧹 CSV filtré enregistré : {output_path}")
+
+
+
+def csv_to_programmes_json(csv_path: str):
+    """
+    Charge un CSV filtré et le transforme en liste JSON de programmes.
+    """
+    import pandas as pd
+
+    if not os.path.exists(csv_path):
+        return []
+
+    df = pd.read_csv(csv_path, sep=";", dtype=str).fillna("")
+
+    programmes = []
+    for _, row in df.iterrows():
+        programmes.append(
+            {
+                "name": row.get("Programme : Code", ""),
+                "checked": False,
+                "libelle": row.get("Programme : Libellé", ""),
+                "etat": row.get("Programme : Etat", ""),
+                "startDate": row.get("Programme : Date de création", ""),
+                "responsable": row.get(
+                    "Programme : Droit : Personne : Responsable : NOM Prénom : Liste",
+                    "",
+                ).replace("|", ", "),
+            }
+        )
+    return programmes
+
 
 def nettoyer_output_data() -> None:
     """

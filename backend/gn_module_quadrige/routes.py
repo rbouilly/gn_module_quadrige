@@ -1,14 +1,12 @@
 # backend/gn_module_quadrige/routes.py
 import os
-import requests  # ❗ AJOUT OBLIGATOIRE
+import requests  #  AJOUT OBLIGATOIRE
 from flask import request, jsonify, send_from_directory
 
 from .extraction_data import extract_ifremer_data
-from .extraction_programs import (
-    extract_programs,
-    nettoyer_csv,
-    csv_to_programmes_json,
-)
+from .extraction_programs import extract_programs
+
+
 from . import utils_backend
 
 
@@ -54,9 +52,10 @@ def init_routes(bp):
                 f"programmes_{monitoring_location}_filtered.csv"
             )
 
-            nettoyer_csv(brut_path, filtre_path, monitoring_location)
+            utils_backend.nettoyer_csv(brut_path, filtre_path, monitoring_location)
 
-            programmes_json = csv_to_programmes_json(filtre_path)
+            programmes_json = utils_backend.csv_to_programmes_json(filtre_path)
+
 
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)}), 500
@@ -118,8 +117,8 @@ def init_routes(bp):
                     "message": "⚠️ Aucun CSV brut trouvé pour ce filtre.",
                 }), 200
 
-            nettoyer_csv(brut_path, filtre_path, monitoring_location)
-            programmes_json = csv_to_programmes_json(filtre_path)
+            utils_backend.nettoyer_csv(brut_path, filtre_path, monitoring_location)
+            programmes_json = utils_backend.csv_to_programmes_json(filtre_path)
 
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)}), 500
@@ -221,7 +220,7 @@ def init_routes(bp):
             f"programmes_{monitoring_location}_brut.csv",
         )
 
-        programmes = csv_to_programmes_json(filtre_path) if os.path.exists(filtre_path) else []
+        programmes = utils_backend.csv_to_programmes_json(filtre_path) if os.path.exists(filtre_path) else []
 
         fichiers_csv = []
         if os.path.exists(brut_path):
