@@ -21,7 +21,7 @@ setuptools.setup(
     long_description_content_type='text/x-rst',
 
     maintainer='Basile André',
-    maintainer_email='basileandre@example.com',
+    maintainer_email='basile.andre@developpement-durable.gouv.fr',
     url='https://github.com/basileandre056/gn_module_quadrige',
 
     # Backend packages
