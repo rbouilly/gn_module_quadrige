@@ -6,6 +6,8 @@ import { Programme } from '../models/programmes';
 import { ExtractedLink } from '../models/extractedLinks';
 import { ExtractionResponse } from '../models/extraction-response';
 import { ProgramExtractionResponse } from '../models/program-extraction-response';
+import { QuadrigeConfigService, QuadrigeConfig } from '../services/quadrige-config.service';
+
 
 // 🔹 Interface manquante — nécessaire pour éviter les erreurs TS
 interface LastProgrammesResponse {
@@ -22,6 +24,10 @@ interface LastProgrammesResponse {
   styleUrls: ['./programme-list.component.scss']
 })
 export class ProgrammeListComponent implements OnInit {
+
+config!: QuadrigeConfig;
+locations: {code: string; label: string}[] = [];
+
 
   programmes: Programme[] = [];
 
@@ -55,11 +61,17 @@ export class ProgrammeListComponent implements OnInit {
     { code: '156-', label: 'Île Europa' },
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private configService: QuadrigeConfigService) {}
 
   ngOnInit(): void {
-    this.initialiserProgrammes();
-  }
+  // La config est déjà chargée par APP_INITIALIZER
+  this.config = this.configService.config;
+  this.locations = this.config.locations;
+
+  this.initialiserProgrammes();
+}
+
+
 
   private initialiserProgrammes(): void {
     this.http.get<LastProgrammesResponse>(`${this.API}/last-programmes`).subscribe({
@@ -89,9 +101,10 @@ export class ProgrammeListComponent implements OnInit {
   }
 
   private updateMonitoringLabel(): void {
-    const found = this.locationLabels.find(l => this.monitoringLocation.startsWith(l.code));
+    const found = this.locations.find(l => this.monitoringLocation.startsWith(l.code));
     this.monitoringLabel = found ? found.label : '';
   }
+
 
   private mapToExtractedLinks(raw: any): ExtractedLink[] {
     if (!Array.isArray(raw)) return [];

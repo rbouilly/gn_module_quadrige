@@ -241,3 +241,19 @@ def init_routes(bp):
             "monitoringLocation": monitoring_location,
             "fichiers_csv": fichiers_csv,
         }), 200
+
+
+
+    # -------------------------
+    # 6) Exposer la configuration TOML au frontend
+    # -------------------------
+    @bp.route("/config", methods=["GET"])
+    def get_frontend_config():
+        from geonature.utils.config import config
+
+        cfg = config["modules"]["quadrige"]
+
+        return jsonify({
+            "locations": cfg.get("locations", []),
+            "extractable_fields": cfg.get("extractable_fields", []),
+        }), 200

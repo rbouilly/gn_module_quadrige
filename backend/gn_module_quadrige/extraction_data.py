@@ -1,12 +1,15 @@
+# backend/gn_module_quadrige/extraction_data.py
+
 import os
 import time
 import requests
-from .utils_backend import OUTPUT_DATA_DIR
 
 from flask import current_app
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 
+from geonature.utils.config import config
+from .utils_backend import OUTPUT_DATA_DIR
 from .build_query import build_extraction_query
 
 
@@ -16,10 +19,10 @@ def extract_ifremer_data(programmes, filter_data):
     la liste des URLs de fichiers ZIP fournis par Ifremer.
     """
 
-    # 🔥 Récupération de la configuration TOML du module
-    conf = current_app.config["GN_MODULES"]["quadrige"]
-    graphql_url = conf["graphql_url"]
-    access_token = conf["access_token"]
+    # 🔥 Lecture de la configuration TOML du module
+    cfg = config["modules"]["quadrige"]
+    graphql_url = cfg["graphql_url"]
+    access_token = cfg["access_token"]
 
     transport = RequestsHTTPTransport(
         url=graphql_url,
@@ -31,7 +34,6 @@ def extract_ifremer_data(programmes, filter_data):
     download_links = []
     os.makedirs(OUTPUT_DATA_DIR, exist_ok=True)
 
-
     for p in programmes:
         current_app.logger.info(f"[extract_ifremer_data] Programme : {p}")
 
@@ -39,24 +41,24 @@ def extract_ifremer_data(programmes, filter_data):
         try:
             execute_query = build_extraction_query(p, filter_data)
             response = client.execute(execute_query)
+
             task_id = response["executeResultExtraction"]["id"]
             current_app.logger.info(f"   Extraction lancée (id: {task_id})")
+
         except Exception as e:
-            current_app.logger.info(f"   ❌ Erreur lors de l'extraction {p} : {e}")
+            current_app.logger.error(f"   ❌ Erreur lors de l'extraction {p} : {e}")
             continue
 
         # 2) Suivi du statut
-        status_query = gql(
-            """
-        query getStatus($id: Int!) {
-            getExtraction(id: $id) {
-                status
-                fileUrl
-                error
+        status_query = gql("""
+            query getStatus($id: Int!) {
+                getExtraction(id: $id) {
+                    status
+                    fileUrl
+                    error
+                }
             }
-        }
-        """
-        )
+        """)
 
         file_url = None
         while file_url is None:
@@ -65,30 +67,43 @@ def extract_ifremer_data(programmes, filter_data):
             )
             extraction = status_response["getExtraction"]
             status = extraction["status"]
+
             current_app.logger.info(f"    Statut: {status}")
 
             if status == "SUCCESS":
                 file_url = extraction["fileUrl"]
                 current_app.logger.info(f"     ✅ Fichier disponible : {file_url}")
+
             elif status in ["PENDING", "RUNNING"]:
                 time.sleep(2)
+
             else:
-                current_app.logger.info(f"     ❌ Tâche en erreur : {extraction.get('error')}")
+                current_app.logger.error(
+                    f"     ❌ Tâche en erreur : {extraction.get('error')}"
+                )
                 break
 
         if not file_url:
             continue
 
-        # 3) Télécharger le ZIP en local (optionnel, debug)
+        # 3) (Optionnel) Téléchargement local
         zip_path = os.path.join(OUTPUT_DATA_DIR, os.path.basename(file_url))
+
         try:
             r = requests.get(file_url)
             r.raise_for_status()
+
             with open(zip_path, "wb") as f:
                 f.write(r.content)
-            current_app.logger.info(f"     💾 ZIP téléchargé localement : {zip_path}")
+
+            current_app.logger.info(
+                f"     💾 ZIP téléchargé localement : {zip_path}"
+            )
+
         except Exception as e:
-            current_app.logger.info(f"     ⚠️ Erreur lors du téléchargement : {e}")
+            current_app.logger.warning(
+                f"     ⚠️ Erreur lors du téléchargement : {e}"
+            )
 
         download_links.append(file_url)
 

@@ -1,0 +1,71 @@
+[quadrige]
+# ----------------------------------------
+# CONFIGURATION GENERALE DU MODULE QUADRIGE
+# ----------------------------------------
+
+#Fichier temporaire qu'il faudra par la suite mettre dans /home/geonatureadmin/geonature2/config/gn_module_quadrige.toml
+
+# URL publique GraphQL Quadrige
+graphql_url = "https://quadrige-core.ifremer.fr/graphql/public"
+
+# Token utilisé pour les extractions
+access_token = "2L7BiaziVfbd9iLhhhaq6MiWRKGwJrexUmR183GgiJx4:39EA9640A2DE33C8FD909F1850462A3DBE17F0B28C4C90E1D1813EEB5BF59FAA:1|KGHk/rHvlglDfKv8/E6DG+MLcAp0RpysnjW3lXMdg2vm4kwUXu+vIYfspTOLSAZVFX6IIj+jzgdDdcxwo16jBg=="
+
+
+# ----------------------------------------
+# LIEUX — configurables librement
+# ----------------------------------------
+locations = [
+  { code = "126-", label = "Réunion" },
+  { code = "145-", label = "Mayotte" },
+  { code = "048-", label = "Maurice" },
+  { code = "153-", label = "Île Tromelin" },
+  { code = "152-", label = "Îles Glorieuses" },
+  { code = "154-", label = "Île Juan de Nova" },
+  { code = "155-", label = "Île Bassas da India" },
+  { code = "156-", label = "Île Europa" }
+]
+
+
+# ----------------------------------------
+# CHAMPS D'EXTRACTION DISPONIBLES
+# ----------------------------------------
+extractable_fields = [
+  "MEASUREMENT_COMMENT",
+  "MEASUREMENT_PMFMU_METHOD_NAME",
+  "MEASUREMENT_NUMERICAL_VALUE",
+  "MEASUREMENT_PMFMU_PARAMETER_NAME",
+  "MEASUREMENT_REFERENCE_TAXON_NAME",
+  "MEASUREMENT_REFERENCE_TAXON_TAXREF",
+  "MEASUREMENT_STRATEGIES_NAME",
+  "MEASUREMENT_UNDER_MORATORIUM",
+  "MEASUREMENT_PMFMU_UNIT_SYMBOL",
+  "MONITORING_LOCATION_BATHYMETRY",
+  "MONITORING_LOCATION_CENTROID_LATITUDE",
+  "MONITORING_LOCATION_CENTROID_LONGITUDE",
+  "MONITORING_LOCATION_ID",
+  "MONITORING_LOCATION_LABEL",
+  "MONITORING_LOCATION_NAME",
+  "SAMPLE_LABEL",
+  "SAMPLE_MATRIX_NAME",
+  "SAMPLE_SIZE",
+  "SAMPLE_TAXON_NAME",
+  "SURVEY_COMMENT",
+  "SURVEY_DATE",
+  "SURVEY_LABEL",
+  "SURVEY_NB_INDIVIDUALS",
+  "SURVEY_OBSERVER_DEPARTMENT_ID",
+  "SURVEY_OBSERVER_DEPARTMENT_LABEL",
+  "SURVEY_OBSERVER_DEPARTMENT_NAME",
+  "SURVEY_OBSERVER_DEPARTMENT_SANDRE",
+  "SURVEY_OBSERVER_ID",
+  "SURVEY_OBSERVER_NAME",
+  "SURVEY_PROGRAMS_NAME",
+  "SURVEY_RECORDER_DEPARTMENT_ID",
+  "SURVEY_RECORDER_DEPARTMENT_LABEL",
+  "SURVEY_RECORDER_DEPARTMENT_NAME",
+  "SURVEY_RECORDER_DEPARTMENT_SANDRE",
+  "SURVEY_TIME",
+  "SURVEY_UNDER_MORATORIUM"
+]
+

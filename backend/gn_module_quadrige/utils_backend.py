@@ -4,7 +4,6 @@ import json
 import datetime
 import tempfile
 import requests
-from flask import current_app
 
 
 # -------------------------
