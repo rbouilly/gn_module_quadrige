@@ -28,18 +28,24 @@ export class ProgramExtractionFilterComponent {
   filteredLocations$: Observable<any[]>;
 
   constructor(private fb: FormBuilder) {
+
+    // 🔹 Donner un type explicite au FormControl
     this.filterForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      monitoringLocation: new FormControl('', Validators.required)
+      monitoringLocation: new FormControl<string>('', Validators.required)
     });
 
-    this.filteredLocations$ = this.filterForm.get('monitoringLocation')!.valueChanges.pipe(
+    // 🔹 Typage fort du valueChanges
+    const monitoringCtrl = this.filterForm.get('monitoringLocation') as FormControl<string>;
+
+    this.filteredLocations$ = monitoringCtrl.valueChanges.pipe(
       startWith(''),
-      map(value => this.filterLocations(value || ''))
+      map((value: string) => this.filterLocations(value || ''))
     );
   }
 
-  private filterLocations(value: string) {
+  // 🔹 Typage strict OK
+  private filterLocations(value: string): any[] {
     const f = value.toLowerCase();
     return this.sugested_locations.filter(loc =>
       loc.label.toLowerCase().includes(f) || loc.code.toLowerCase().includes(f)

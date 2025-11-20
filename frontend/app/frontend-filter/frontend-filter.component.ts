@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import {
-  ReactiveFormsModule,
   FormBuilder,
   FormGroup,
   FormControl,
@@ -16,7 +15,14 @@ export class FrontendFilterComponent {
   @Output() apply = new EventEmitter<any>();
   @Output() close = new EventEmitter<void>();
 
-  filterForm: FormGroup;
+  // 🔹 Typage strict du form
+  filterForm: FormGroup<{
+    name: FormControl<string>;
+    fields: FormControl<string[]>;
+    fieldInput: FormControl<string>;
+    startDate: FormControl<Date | null>;
+    endDate: FormControl<Date | null>;
+  }>;
 
   availableFields: string[] = [
     'MEASUREMENT_COMMENT',
@@ -58,28 +64,31 @@ export class FrontendFilterComponent {
   ];
 
   constructor(private fb: FormBuilder) {
-    this.filterForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      fields: [[]],
-      fieldInput: new FormControl(''),
-      startDate: new FormControl<Date | null>(null),
-      endDate: new FormControl<Date | null>(null)
+
+    this.filterForm = this.fb.nonNullable.group({
+      name: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
+      fields: this.fb.nonNullable.control<string[]>([]),
+      fieldInput: this.fb.nonNullable.control<string>(''),
+      startDate: this.fb.control<Date | null>(null),
+      endDate: this.fb.control<Date | null>(null),
     });
   }
 
-  get fieldInputControl(): FormControl {
-    return this.filterForm.get('fieldInput') as FormControl;
+  // 🔹 Typage strict
+  get fieldInputControl(): FormControl<string> {
+    return this.filterForm.controls.fieldInput;
   }
 
   get remainingFields(): string[] {
-    const selected = this.filterForm.value.fields || [];
+    const selected: string[] = this.filterForm.controls.fields.value || [];
     return this.availableFields.filter(f => !selected.includes(f));
   }
 
+  // 🔹 Typage strict: plus de implicit any
   isFormValid(): boolean {
     const { name, fields, startDate, endDate } = this.filterForm.value;
 
-    const nameValid = name && name.trim().length >= 3;
+    const nameValid = !!name && name.trim().length >= 3;
     const fieldsValid = Array.isArray(fields) && fields.length > 0;
 
     let periodValid = true;
@@ -101,37 +110,38 @@ export class FrontendFilterComponent {
     return startDate > endDate;
   }
 
+  // 🔹 Typage strict
   addField(field: string): void {
-  if (!field) return;
+    if (!field) return;
 
-  const fields = (this.filterForm.value.fields as string[]) || [];
-  if (!fields.includes(field)) {
-    this.filterForm.patchValue({
-      fields: [...fields, field],
-      fieldInput: ''
-    });
+    const current = this.filterForm.controls.fields.value;
+    if (!current.includes(field)) {
+      this.filterForm.controls.fields.setValue([...current, field]);
+      this.filterForm.controls.fieldInput.setValue('');
+    }
   }
-}
 
   removeField(field: string): void {
-  const fields = (this.filterForm.value.fields as string[]) || [];
-  this.filterForm.patchValue({
-    fields: fields.filter((f: string) => f !== field)
-  });
-}
+    const fields = this.filterForm.get('fields') as FormControl<string[]>;
+    const current = fields.value ?? [];
+    fields.setValue(current.filter((f: string) => f !== field));
+  }
+
 
 
   applyFilter(): void {
     if (!this.isFormValid()) return;
 
     const formatDate = (d: Date | null) =>
-      d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : null;
+      d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : null;
+
+    const { name, fields, startDate, endDate } = this.filterForm.value;
 
     const filterData = {
-      name: this.filterForm.value.name,
-      fields: this.filterForm.value.fields,
-      startDate: formatDate(this.filterForm.value.startDate),
-      endDate: formatDate(this.filterForm.value.endDate)
+      name,
+      fields,
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate)
     };
 
     this.apply.emit(filterData);

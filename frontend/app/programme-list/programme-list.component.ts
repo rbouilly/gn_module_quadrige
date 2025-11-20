@@ -1,10 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
+// 🔹 Types
 import { Programme } from '../models/programmes';
 import { ExtractedLink } from '../models/extractedLinks';
 import { ExtractionResponse } from '../models/extraction-response';
 import { ProgramExtractionResponse } from '../models/program-extraction-response';
+
+// 🔹 Interface manquante — nécessaire pour éviter les erreurs TS
+interface LastProgrammesResponse {
+  status: string;
+  programmes?: Programme[];
+  monitoringLocation?: string;
+  fichiers_csv?: any[];
+  message?: string;
+}
 
 @Component({
   selector: 'app-programme-list',
@@ -32,6 +42,8 @@ export class ProgrammeListComponent implements OnInit {
   monitoringLocation: string = '';
   monitoringLabel: string = '';
 
+  private API = '/api/quadrige';
+
   private locationLabels = [
     { code: '126-', label: 'Réunion' },
     { code: '145-', label: 'Mayotte' },
@@ -49,12 +61,12 @@ export class ProgrammeListComponent implements OnInit {
     this.initialiserProgrammes();
   }
 
-  private initialiserProgrammes() {
-    this.http.get<any>('http://localhost:5000/last-programmes').subscribe({
-      next: (res) => {
+  private initialiserProgrammes(): void {
+    this.http.get<LastProgrammesResponse>(`${this.API}/last-programmes`).subscribe({
+      next: (res: LastProgrammesResponse) => {
         if (res?.status === 'ok' && Array.isArray(res?.programmes) && res.programmes.length > 0) {
 
-          this.programmes = (res.programmes as Programme[]).map((p: Programme) => ({
+          this.programmes = res.programmes.map((p: Programme) => ({
             ...p,
             checked: false
           }));
@@ -63,14 +75,15 @@ export class ProgrammeListComponent implements OnInit {
           this.updateMonitoringLabel();
           this.extractedProgramFiles = this.mapToExtractedLinks(res?.fichiers_csv || []);
           this.message = `✅ ${this.programmes.length} programmes chargés (${this.monitoringLocation})`;
+
         } else {
           this.extractedProgramFiles = this.mapToExtractedLinks(res?.fichiers_csv || []);
-          this.message = "Aucun programme sauvegardé.";
+          this.message = 'Aucun programme sauvegardé.';
         }
       },
-      error: (err) => {
-        console.error("[FRONTEND] ❌ Erreur backend :", err);
-        this.message = "Erreur lors du chargement des derniers programmes.";
+      error: (err: HttpErrorResponse) => {
+        console.error('[FRONTEND] ❌ Erreur backend :', err);
+        this.message = 'Erreur lors du chargement des derniers programmes.';
       }
     });
   }
@@ -90,7 +103,7 @@ export class ProgrammeListComponent implements OnInit {
       .filter((f: ExtractedLink) => !!f.url);
   }
 
-  get filteredProgrammes() {
+  get filteredProgrammes(): Programme[] {
     if (!this.searchText) return this.programmes;
     return this.programmes.filter(p =>
       p.name.toLowerCase().includes(this.searchText.toLowerCase())
@@ -101,35 +114,35 @@ export class ProgrammeListComponent implements OnInit {
     return this.searchText.trim().length > 0;
   }
 
-  toggleAll() {
+  toggleAll(): void {
     this.programmes.forEach(p => (p.checked = this.allSelected));
   }
 
-  openDataFilter() {
+  openDataFilter(): void {
     this.showProgramFilter = false;
     this.showDataFilter = true;
   }
 
-  openProgramFilter() {
+  openProgramFilter(): void {
     this.showDataFilter = false;
     this.showProgramFilter = true;
   }
 
-  onDataFilterApplied(filterData: any) {
-    this.message = 'filtre de données appliqué.';
+  onDataFilterApplied(filterData: any): void {
+    this.message = 'Filtre de données appliqué.';
     this.showDataFilter = false;
 
     const { monitoringLocation, ...filterWithoutLocation } = filterData;
     this.dataFilter = filterWithoutLocation;
   }
 
-  onProgramFilterApplied(filterData: any) {
-    this.message = 'filtre de programmes appliqué.';
+  onProgramFilterApplied(filterData: any): void {
+    this.message = 'Filtre de programmes appliqué.';
     this.showProgramFilter = false;
     this.programFilter = filterData;
   }
 
-  extractPrograms() {
+  extractPrograms(): void {
     if (!this.programFilter) {
       this.message = 'Veuillez définir un filtre d’extraction de programmes.';
       return;
@@ -139,10 +152,10 @@ export class ProgrammeListComponent implements OnInit {
     this.message = 'Extraction et filtrage des programmes en cours...';
 
     this.http.post<ProgramExtractionResponse>(
-      'http://localhost:5000/program-extraction',
+      `${this.API}/program-extraction`,
       { filter: this.programFilter }
     ).subscribe({
-      next: (res) => {
+      next: (res: ProgramExtractionResponse) => {
         this.monitoringLocation = this.programFilter?.monitoringLocation || '';
         this.updateMonitoringLabel();
 
@@ -150,41 +163,43 @@ export class ProgrammeListComponent implements OnInit {
           this.extractedProgramFiles = this.mapToExtractedLinks(res.fichiers_csv);
 
           if (Array.isArray(res.programmes)) {
-            this.programmes = (res.programmes as Programme[]).map((p: Programme) => ({
+            this.programmes = res.programmes.map((p: Programme) => ({
               ...p,
               checked: false
             }));
           }
 
           this.message = `✅ Extraction terminée (${this.programmes.length} programmes)`;
+
         } else {
           this.message = res?.message ?? 'Réponse inattendue du serveur';
         }
 
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.message = err?.error?.message ?? 'Erreur serveur inattendue';
         this.isLoading = false;
       }
     });
   }
 
-  relancerFiltrageSeul() {
+  relancerFiltrageSeul(): void {
     this.isLoading = true;
 
     this.http.post<any>(
-      'http://localhost:5000/filtrage_seul',
+      `${this.API}/filtrage_seul`,
       { filter: this.programFilter || {} }
     ).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.extractedProgramFiles = this.mapToExtractedLinks(res.fichiers_csv || []);
 
         if (Array.isArray(res.programmes)) {
-          this.programmes = (res.programmes as Programme[]).map((p: Programme) => ({
+          this.programmes = res.programmes.map((p: Programme) => ({
             ...p,
             checked: false
           }));
+
           this.message = `✅ Filtrage relancé (${this.programmes.length} programmes)`;
         } else {
           this.message = res?.message ?? 'Aucun programme trouvé';
@@ -192,14 +207,14 @@ export class ProgrammeListComponent implements OnInit {
 
         this.isLoading = false;
       },
-      error: () => {
-        this.message = "Erreur lors du filtrage seul.";
+      error: (err: HttpErrorResponse) => {
+        this.message = 'Erreur lors du filtrage seul.';
         this.isLoading = false;
       }
     });
   }
 
-  extractData() {
+  extractData(): void {
     const selectedPrograms = this.programmes
       .filter(p => p.checked)
       .map(p => p.name);
@@ -218,10 +233,10 @@ export class ProgrammeListComponent implements OnInit {
     this.message = 'Extraction des données en cours...';
 
     this.http.post<ExtractionResponse>(
-      'http://localhost:5000/data-extractions',
+      `${this.API}/data-extractions`,
       { programmes: selectedPrograms, filter: this.dataFilter }
     ).subscribe({
-      next: (res) => {
+      next: (res: ExtractionResponse) => {
         if (res?.status === 'ok') {
           this.extractedDataFiles = this.mapToExtractedLinks(res?.fichiers_zip);
           this.message = `Fichiers extraits (${this.extractedDataFiles.length})`;
@@ -229,9 +244,10 @@ export class ProgrammeListComponent implements OnInit {
           this.message = res?.message ?? 'Réponse inattendue du serveur';
           this.extractedDataFiles = [];
         }
+
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.message = err?.error?.message ?? 'Erreur serveur inattendue';
         this.extractedDataFiles = [];
         this.isLoading = false;
