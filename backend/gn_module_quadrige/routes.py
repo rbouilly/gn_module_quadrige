@@ -245,15 +245,17 @@ def init_routes(bp):
 
 
     # -------------------------
-    # 6) Exposer la configuration TOML au frontend
+    # 6) Renvoyer la configuration Quadrige au frontend
     # -------------------------
     @bp.route("/config", methods=["GET"])
-    def get_frontend_config():
-        from geonature.utils.config import config
+    def get_config():
+        from geonature.utils.config import config as gn_config
 
-        cfg = config["modules"]["quadrige"]
-
-        return jsonify({
-            "locations": cfg.get("locations", []),
-            "extractable_fields": cfg.get("extractable_fields", []),
-        }), 200
+        try:
+            cfg = gn_config["modules"]["quadrige"]
+            return jsonify(cfg), 200   # ⬅ Renvoie directement la config
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": f"Impossible de charger la configuration Quadrige : {e}"
+            }), 500

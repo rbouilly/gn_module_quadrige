@@ -3,7 +3,8 @@
 # CONFIGURATION GENERALE DU MODULE QUADRIGE
 # ----------------------------------------
 
-#Fichier temporaire qu'il faudra par la suite mettre dans /home/geonatureadmin/geonature2/config/gn_module_quadrige.toml
+#Fichier temporaire qu'il faudra par la suite mettre dans /home/geonatureadmin/geonature2/config/gn_module_quadrige.toml  
+#puis executer geonature upgrade module quadrige
 
 # URL publique GraphQL Quadrige
 graphql_url = "https://quadrige-core.ifremer.fr/graphql/public"
