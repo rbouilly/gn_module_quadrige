@@ -10,4 +10,4 @@ MODULE_PICTO = "static/picto.png"
 # Exposition des éléments pour les entry_points du setup.py
 from .blueprint import blueprint          # Blueprint Flask (routes API)
 from .config_schema_toml import GnModuleSchemaConf  # Schéma de config TOML
-from . import migrations                  # Dossier Alembic (optionnel, mais prêt)
+#from . import migrations                  # Dossier Alembic (optionnel, mais prêt)

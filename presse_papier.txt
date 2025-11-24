@@ -11,6 +11,8 @@ sudo journalctl -xe --no-pager | grep -i "geonature"
 
 sudo journalctl -u geonature -n 50 --no-pager
 
+
+
 Installation manuelle
 Installation du backend
 
