@@ -1,9 +1,10 @@
-[quadrige]
+[modules.quadrige]
 # ----------------------------------------
 # CONFIGURATION GENERALE DU MODULE QUADRIGE
 # ----------------------------------------
 
-#Fichier temporaire qu'il faudra par la suite mettre dans /home/geonatureadmin/geonature2/config/gn_module_quadrige.toml  
+#Fichier temporaire qu'il faut mettre dans : ~/geonature/config/quadrige_config.toml
+ 
 #puis executer geonature upgrade module quadrige
 
 # URL publique GraphQL Quadrige
