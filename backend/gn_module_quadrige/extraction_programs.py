@@ -6,16 +6,15 @@ from flask import current_app
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 
-from geonature.utils.config import config
-
 
 def extract_programs(filter_data: dict):
     """
     Lance une extraction de programmes et retourne l’URL CSV fournie par Ifremer.
     """
 
-    # 🔥 Lecture de la configuration TOML du module
-    cfg = config["modules"]["quadrige"]
+   # 🔥 Lecture de la configuration TOML du module (import LAZY)
+    from geonature.utils.config import config as gn_config
+    cfg = gn_config["modules"]["quadrige"]
     graphql_url = cfg["graphql_url"]
     access_token = cfg["access_token"]
 

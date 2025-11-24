@@ -8,7 +8,6 @@ from flask import current_app
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 
-from geonature.utils.config import config
 from .utils_backend import OUTPUT_DATA_DIR
 from .build_query import build_extraction_query
 
@@ -20,7 +19,9 @@ def extract_ifremer_data(programmes, filter_data):
     """
 
     # 🔥 Lecture de la configuration TOML du module
-    cfg = config["modules"]["quadrige"]
+    # 🔥 Lecture de la configuration TOML du module (import LAZY pour éviter la boucle)
+    from geonature.utils.config import config as gn_config
+    cfg = gn_config["modules"]["quadrige"]
     graphql_url = cfg["graphql_url"]
     access_token = cfg["access_token"]
 
