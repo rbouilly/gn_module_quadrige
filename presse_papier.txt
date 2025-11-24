@@ -1,3 +1,102 @@
+installation 👍
+
+
+Installation manuelle
+Installation du backend
+
+Installer le module avec pip en mode éditable après avoir activé le venv de GeoNature, puis relancer GeoNature :
+
+source ~/geonature/backend/venv/bin/activate
+pip install --editable <dossier du module>
+sudo systemctl restart geonature
+Installation du frontend
+
+Créer un lien symbolique dans le dossier frontend/external_modules de GeoNature vers le dossier frontend du module. Le lien symbolique doit être nommé suivant le code du module en minuscule :
+
+cd ~/geonature/frontend/external_modules/
+ln -s <dossier du module>/frontend <code du module en minuscule>
+Exemple pour le module Import :
+
+cd ~/geonature/frontend/external_modules/
+ln -s ~/gn_module_import/frontend import
+Re-builder le frontend :
+
+cd ~/geonature/frontend/
+nvm use
+npm run build
+Installation de la base de données
+
+source ~/geonature/backend/venv/bin/activate
+geonature upgrade-modules-db <code du module>
+Configuration du module
+De manière facultative, vous pouvez modifier la configuration du module. Pour cela, vous pouvez créer un fichier de configuration dans le dossier config de GeoNature en le nommant <code du module en minuscule>_config.toml. La plupart des modules fournissent un fichier d’exemple <module-code>_config.toml.example dans leur dossier racine dont vous pouvez vous inspirer.
+
+Après création de ce fichier, activez le rechargement automatique de GeoNature lors des modifications du fichier en lançant les commandes suivantes :
+
+sudo systemctl daemon-reload
+sudo systemctl restart geonature
+Avant la version 2.12.0 de GeoNature, après chaque modification de la configuration du module, vous devez recharger GeoNature manuellement :
+
+sudo systemctl reload geonature
+Mise à jour du module
+Déplacer le code de l’ancienne version du module : mv gn_module_xxx gn_module_xxx_old
+
+Télécharger et désarchiver la nouvelle version du module, et renommer son dossier afin qu’il porte le même nom qu’avant (e.g. gn_module_xxx)
+
+(Optionnel) Si le fichier de configuration du module est encore placé avec celui-ci, le déplacer dans la dossier de configuration centralisée de GeoNature : cp gn_module_xxx_old/config/conf_gn_module.toml geonature/config/<mode-code>_config.toml
+
+Relancer l’installation du module : geonature install-gn-module gn_module_xxx XXX && sudo systemctl reload geonature
+
+Mise à jour de l’application
+Avertissement
+
+Avant chaque mise à jour de GeoNature, il est important de sauvegarder l’application et sa base de données, ou de faire un snapshot du serveur pour pouvoir revenir à son état antérieure avant mise à jour, en cas de problème.
+
+Avertissement
+
+Vérifiez préalablement la compatibilité des modules que vous utilisez avant de mettre GeoNature à jour. S’il est nécessaire de les mettre à jour, arrêtez vous après le remplacement du dossier par le nouveau code source (et la récupération éventuelle de la configuration); le script de migration de GeoNature s’occupera automatiquement d’installer la nouvelle version du module.
+
+La mise à jour de GeoNature consiste à télécharger sa nouvelle version dans un nouveau répertoire, récupérer les fichiers de configuration et de surcouche, ainsi que les médias depuis la version actuelle et de relancer l’installation dans le répertoire de la nouvelle version.
+
+La mise à jour doit être réalisée avec votre utilisateur linux courant (geonatureadmin par exemple) et non pas le super-utilisateur root.
+
+Télécharger la dernière version de GeoNature :
+
+wget https://github.com/PnX-SI/GeoNature/archive/X.Y.Z.zip
+unzip X.Y.Z.zip
+rm X.Y.Z.zip
+Renommer l’ancien repertoire de l’application, ainsi que le nouveau :
+
+mv ~/geonature/ ~/geonature_old/
+mv ~/GeoNature-X.Y.Z ~/geonature/
+cd ~/geonature
+Suivez les éventuelles notes de version spécifiques décrites au niveau de chaque version : https://github.com/PnX-SI/GeoNature/releases.
+
+Sauf mentions contraires dans les notes de version, vous pouvez sauter des versions mais en suivant bien les différentes notes de versions intermédiaires.
+
+Si vous devez aussi mettre à jour UsersHub, suivez ses notes de version et sa documentation (https://usershub.readthedocs.io).
+
+Lancez le script de migration.sh à la racine du dossier geonature:
+
+./install/migration/migration.sh 2>&1 | tee install/migration/migration.log
+Depuis la version 2.12, le script migration.sh peut prendre en argument le chemin vers l’ancien dossier d’installation de GeoNature. Il peut s’agir du même dossier que la nouvelle installation de GeoNature. Cela permet d’utiliser ce script si la nouvelle version de GeoNature est dans le même dossier et donc de gérer le cas où GeoNature est installé et mis à jour avec git.
+
+Dans ce cas, les commandes à exécuter sont :
+
+cd ~/GeoNature
+git status # optionnel, pour connaitre l'état et la version ou branche actuellement utilisée
+git fetch
+git checkout X.Y.Z # où X.Y.Z est le numéro du tag de la version vers laquelle faire la mise à jour, ou le nom de la branche à utiliser
+git submodule update # ou "git config submodule.recurse true" lancé une seule fois, pour que la mise à jour des sous-modules soit relancée automatiquement à chaque "git pull"
+./install/migration/migration.sh .
+
+
+
+
+tests :
+
+
+
 python -c "import pkg_resources; print([ep.name for ep in pkg_resources.iter_entry_points('gn_module')])"
 pip list | grep gn_module_quadrige
 pip show gn_module_quadrige
@@ -5,3 +104,9 @@ pip show gn_module_quadrige
 
 pip uninstall gn_module_quadrige
 pip uninstall gn_module_quadrige   # parfois nécessaire 2 ou 3 fois
+
+
+
+
+
+
