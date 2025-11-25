@@ -1,4 +1,13 @@
 tests :
+curl -X POST "http://10.172.2.156/geonature/api/quadrige/program-extraction" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "filter": {
+            "monitoringLocation": "MAYOTTE",
+            "name": "test",
+            "fields": ["MONITORING_LOCATION_NAME"]
+          }
+        }'
 
 git clone https://github.com/basileandre056/gn_module_quadrige.git
 
