@@ -4,7 +4,7 @@ Package backend du module externe GeoNature : gn_module_quadrige
 """
 
 # Code utilisé par GeoNature pour enregistrer le module
-MODULE_CODE = "quadrige"
+MODULE_CODE = "QUADRIGE"
 MODULE_PICTO = "static/picto.png"
 
 # Exposition des éléments pour les entry_points du setup.py
