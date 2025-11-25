@@ -2,6 +2,12 @@ tests :
 
 git clone https://github.com/basileandre056/gn_module_quadrige.git
 
+python - <<EOF
+import pprint
+from geonature.utils.config import config
+pprint.pprint(config.to_dict())
+EOF
+
 
 
 python -c "import pkg_resources; print([ep.name for ep in pkg_resources.iter_entry_points('gn_module')])"
