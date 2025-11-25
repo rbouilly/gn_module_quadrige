@@ -109,3 +109,7 @@ git submodule update # ou "git config submodule.recurse true" lancé une seule f
 
 
 
+python - <<EOF
+from geonature.utils.config import config
+print(config["modules"].get("quadrige"))
+EOF
