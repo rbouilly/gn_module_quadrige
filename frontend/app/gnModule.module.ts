@@ -1,4 +1,6 @@
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -8,10 +10,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRippleModule } from '@angular/material/core';
-
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -27,12 +25,17 @@ import { GN2CommonModule } from '@geonature_common/GN2Common.module';
 
 import { QuadrigeConfigService } from './services/quadrige-config.service';
 
-// 🔹 Composants Quadrige
+// Components
 import { ProgrammeListComponent } from './programme-list/programme-list.component';
 import { FrontendFilterComponent } from './frontend-filter/frontend-filter.component';
 import { ProgramExtractionFilterComponent } from './program-extraction-filter/program-extraction-filter.component';
 import { ExtractedLinksComponent } from './extracted-links/extracted-links.component';
 
+// ROUTES — exactement comme MONITORINGS
+const routes: Routes = [
+  { path: '', component: ProgrammeListComponent },
+  { path: '**', redirectTo: '' }
+];
 
 export function loadQuadrigeConfig(configService: QuadrigeConfigService) {
   return () => configService.loadConfig();
@@ -46,23 +49,15 @@ export function loadQuadrigeConfig(configService: QuadrigeConfigService) {
     ExtractedLinksComponent,
   ],
 
-  providers: [
-    QuadrigeConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: loadQuadrigeConfig,
-      deps: [QuadrigeConfigService],
-      multi: true,
-    },
-  ],
-
   imports: [
+    GN2CommonModule,
+    RouterModule.forChild(routes),
+
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
 
-    // Material
     MatSortModule,
     MatTooltipModule,
     MatRippleModule,
@@ -78,12 +73,17 @@ export function loadQuadrigeConfig(configService: QuadrigeConfigService) {
     MatChipsModule,
     MatDatepickerModule,
     MatNativeDateModule,
-
-    // GeoNature
-    GN2CommonModule,
   ],
 
-  
+  providers: [
+    QuadrigeConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: loadQuadrigeConfig,
+      deps: [QuadrigeConfigService],
+      multi: true,
+    },
+  ],
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
