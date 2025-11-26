@@ -1,9 +1,24 @@
 tests :
+
+curl -X POST "http://10.172.2.156/geonature/api/quadrige/data-extractions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "programmes": [
+      "AAMP_CONTAMINANTS_SEDIMENTS",
+      "REPHYTOX"
+    ],
+    "filter": {
+      "name": "test_data",
+      "fields": ["MONITORING_LOCATION_NAME"]
+    }
+  }'
+
+
 curl -X POST "http://10.172.2.156/geonature/api/quadrige/program-extraction" \
      -H "Content-Type: application/json" \
      -d '{
           "filter": {
-            "monitoringLocation": "MAYOTTE",
+            "monitoringLocation": "145-",
             "name": "test",
             "fields": ["MONITORING_LOCATION_NAME"]
           }
