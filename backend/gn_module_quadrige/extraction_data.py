@@ -21,7 +21,8 @@ def extract_ifremer_data(programmes, filter_data):
     # 🔥 Lecture de la configuration TOML du module
     # 🔥 Lecture de la configuration TOML du module (import LAZY pour éviter la boucle)
     from geonature.utils.config import config as gn_config
-    cfg = gn_config["modules"]["quadrige"]
+    cfg = gn_config["QUADRIGE"]
+
     graphql_url = cfg["graphql_url"]
     access_token = cfg["access_token"]
 

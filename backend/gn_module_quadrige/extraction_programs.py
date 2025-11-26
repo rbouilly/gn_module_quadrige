@@ -14,7 +14,8 @@ def extract_programs(filter_data: dict):
 
    # 🔥 Lecture de la configuration TOML du module (import LAZY)
     from geonature.utils.config import config as gn_config
-    cfg = gn_config["modules"]["quadrige"]
+    cfg = gn_config["QUADRIGE"]
+
     graphql_url = cfg["graphql_url"]
     access_token = cfg["access_token"]
 

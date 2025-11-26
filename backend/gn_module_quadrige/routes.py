@@ -252,8 +252,10 @@ def init_routes(bp):
         from geonature.utils.config import config as gn_config
 
         try:
-            cfg = gn_config["modules"]["quadrige"]
-            return jsonify(cfg), 200   # ⬅ Renvoie directement la config
+            cfg = gn_config.get("QUADRIGE")
+            if not cfg:
+                raise KeyError("QUADRIGE")
+            return jsonify(cfg), 200
         except Exception as e:
             return jsonify({
                 "status": "error",
