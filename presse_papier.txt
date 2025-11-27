@@ -96,7 +96,6 @@ const defaultRoutes: Routes = [
       },
 
 
-
       {
         path: 'notification',
         component: NotificationComponent,
