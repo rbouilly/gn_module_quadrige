@@ -9,9 +9,11 @@ config/gn_module_quadrige.toml dans l’installation GeoNature.
 from marshmallow import Schema, fields
 
 class GnModuleSchemaConf(Schema):
-    graphql_url = fields.Url()
-    access_token = fields.String(required=True)
+    graphql_url = fields.Url(required=False, allow_none=True)
+    access_token = fields.String(required=False, allow_none=True)
 
     # Champs additionnels configurables dans le TOML
-    locations = fields.List(fields.Dict(), missing=[])
-    extractable_fields = fields.List(fields.String(), missing=[])
+    locations = fields.List(fields.Dict(), required=False, missing=[])
+    extractable_fields = fields.List(fields.String(), required=False, missing=[])
+
+

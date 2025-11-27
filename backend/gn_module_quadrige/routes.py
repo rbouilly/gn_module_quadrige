@@ -244,20 +244,71 @@ def init_routes(bp):
 
 
 
-    # -------------------------
-    # 6) Renvoyer la configuration Quadrige au frontend
-    # -------------------------
     @bp.route("/config", methods=["GET"])
     def get_config():
+        """
+        Renvoie la configuration Quadrige :
+          - si aucune config TOML -> renvoie {} + warning
+          - si config TOML présente -> vérification de validité
+        """
         from geonature.utils.config import config as gn_config
-
-        try:
-            cfg = gn_config.get("QUADRIGE")
-            if not cfg:
-                raise KeyError("QUADRIGE")
-            return jsonify(cfg), 200
-        except Exception as e:
+    
+        cfg = gn_config.get("QUADRIGE")
+    
+        if not cfg:
             return jsonify({
-                "status": "error",
-                "message": f"Impossible de charger la configuration Quadrige : {e}"
-            }), 500
+                "status": "warning",
+                "message": (
+                    "Aucune configuration Quadrige chargée. "
+                    "Le fichier quadrige_config.toml est absent ou vide."
+                ),
+                "config": {}
+            }), 200
+    
+        # ------------------------------------
+        # 🔍 Vérification facultative du TOML
+        # ------------------------------------
+        errors = []
+    
+        # 1) graphql_url obligatoire si TOML existe
+        if not cfg.get("graphql_url"):
+            errors.append("graphql_url manquant")
+    
+        # 2) access_token obligatoire si TOML existe
+        if not cfg.get("access_token"):
+            errors.append("access_token manquant")
+    
+        # 3) locations doit être une liste de dicts
+        locations = cfg.get("locations")
+        if locations is not None and not isinstance(locations, list):
+            errors.append("locations doit être une liste")
+        elif isinstance(locations, list):
+            for loc in locations:
+                if not isinstance(loc, dict) or "code" not in loc or "label" not in loc:
+                    errors.append("locations : un élément doit contenir {code, label}")
+                    break
+                
+        # 4) extractable_fields doit être une liste de chaînes
+        fields = cfg.get("extractable_fields")
+        if fields is not None and not isinstance(fields, list):
+            errors.append("extractable_fields doit être une liste")
+        elif isinstance(fields, list):
+            if not all(isinstance(f, str) for f in fields):
+                errors.append("extractable_fields doit contenir uniquement des chaînes")
+    
+        # ------------------------------------
+        #  Résultat final
+        # ------------------------------------
+        if errors:
+            return jsonify({
+                "status": "warning",
+                "message": "La configuration Quadrige comporte des incohérences.",
+                "errors": errors,
+                "config": cfg
+            }), 200
+    
+        # Config OK
+        return jsonify({
+            "status": "ok",
+            "config": cfg
+        }), 200
