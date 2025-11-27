@@ -95,7 +95,6 @@ const defaultRoutes: Routes = [
           ).then((m) => m.ImportsModule),
       },
 
-
       {
         path: 'notification',
         component: NotificationComponent,
