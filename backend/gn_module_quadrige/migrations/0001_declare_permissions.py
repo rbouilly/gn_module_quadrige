@@ -83,3 +83,4 @@ def downgrade():
           AND m.module_code = 'QUADRIGE';
         """
     )
+
