@@ -77,7 +77,7 @@ def extract_ifremer_data(programmes, filter_data):
                 current_app.logger.info(f"     ✅ Fichier disponible : {file_url}")
 
             elif status in ["PENDING", "RUNNING"]:
-                time.sleep(2)
+                time.sleep(10)
 
             else:
                 current_app.logger.error(
