@@ -32,10 +32,10 @@ def upgrade():
             v.label
         FROM (
             VALUES
-                ('QUADRIGE', 'QUADRIGE', 'R', false, 'Accéder au module Quadrige'),
-                ('QUADRIGE', 'QUADRIGE', 'C', false, 'Lancer une extraction Quadrige'),
-                ('QUADRIGE', 'QUADRIGE', 'U', false, 'Modifier les paramètres Quadrige'),
-                ('QUADRIGE', 'QUADRIGE', 'D', false, 'Supprimer une extraction Quadrige')
+                ('QUADRIGE', 'ALL', 'R', false, 'Accéder au module Quadrige'),
+                ('QUADRIGE', 'ALL', 'C', false, 'Lancer une extraction Quadrige'),
+                ('QUADRIGE', 'ALL', 'U', false, 'Modifier les paramètres Quadrige'),
+                ('QUADRIGE', 'ALL', 'D', false, 'Supprimer une extraction Quadrige')
         ) AS v (module_code, object_code, action_code, scope_filter, label)
         JOIN gn_commons.t_modules m ON m.module_code = v.module_code
         JOIN gn_permissions.t_objects o ON o.code_object = v.object_code
@@ -53,7 +53,8 @@ def upgrade():
 def downgrade():
     op.execute("""
         DELETE FROM gn_permissions.t_permissions_available
-        WHERE id_object = (
-            SELECT id_object FROM gn_permissions.t_objects WHERE code_object = 'QUADRIGE'
+        WHERE id_module = (
+            SELECT id_module FROM gn_commons.t_modules WHERE module_code = 'QUADRIGE'
         );
     """)
+
