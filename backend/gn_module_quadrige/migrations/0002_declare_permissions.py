@@ -1,52 +1,59 @@
 """
-Declare available permissions for QUADRIGE module
+Declare QUADRIGE permissions
 
-Revision ID: 0002
-Revises: 0001
+Revision ID: 0002_quadrige_permissions
+Revises: 0001_quadrige_init
 Create Date: 2025-11-27
 """
 
 from alembic import op
 
-revision = "0002"
-down_revision = "0001"
+revision = "0002_quadrige_permissions"
+down_revision = "0001_quadrige_init"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
+
     op.execute("""
-        INSERT INTO
-            gn_permissions.t_permissions_available (
-                id_module,
-                id_object,
-                id_action,
-                label,
-                scope_filter
-            )
+        INSERT INTO gn_permissions.t_permissions_available (
+            id_module,
+            id_object,
+            id_action,
+            scope_filter,
+            label
+        )
         SELECT
             m.id_module,
             o.id_object,
             a.id_action,
-            v.label,
-            v.scope_filter
+            v.scope_filter,
+            v.label
         FROM (
             VALUES
-                ('QUADRIGE', 'QUADRIGE_ALL', 'C', False, 'Créer dans QUADRIGE'),
-                ('QUADRIGE', 'QUADRIGE_ALL', 'R', True , 'Voir QUADRIGE'),
-                ('QUADRIGE', 'QUADRIGE_ALL', 'U', False, 'Modifier QUADRIGE'),
-                ('QUADRIGE', 'QUADRIGE_ALL', 'D', False, 'Supprimer dans QUADRIGE')
+                ('QUADRIGE', 'QUADRIGE', 'R', false, 'Accéder au module Quadrige'),
+                ('QUADRIGE', 'QUADRIGE', 'C', false, 'Lancer une extraction Quadrige'),
+                ('QUADRIGE', 'QUADRIGE', 'U', false, 'Modifier les paramètres Quadrige'),
+                ('QUADRIGE', 'QUADRIGE', 'D', false, 'Supprimer une extraction Quadrige')
         ) AS v (module_code, object_code, action_code, scope_filter, label)
         JOIN gn_commons.t_modules m ON m.module_code = v.module_code
         JOIN gn_permissions.t_objects o ON o.code_object = v.object_code
-        JOIN gn_permissions.bib_actions a ON a.code_action = v.action_code;
+        JOIN gn_permissions.bib_actions a ON a.code_action = v.action_code
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM gn_permissions.t_permissions_available pa
+            WHERE pa.id_module = m.id_module
+              AND pa.id_object = o.id_object
+              AND pa.id_action = a.id_action
+        );
     """)
 
 
 def downgrade():
     op.execute("""
-        DELETE FROM gn_permissions.t_permissions_available pa
-        USING gn_commons.t_modules m
-        WHERE pa.id_module = m.id_module
-          AND m.module_code = 'QUADRIGE';
+        DELETE FROM gn_permissions.t_permissions_available
+        WHERE id_object = (
+            SELECT id_object FROM gn_permissions.t_objects WHERE code_object = 'QUADRIGE'
+        );
     """)
