@@ -7,7 +7,7 @@ import { Programme } from '../models/programmes';
 import { ExtractedLink } from '../models/extractedLinks';
 import { ExtractionResponse } from '../models/extraction-response';
 import { ProgramExtractionResponse } from '../models/program-extraction-response';
-import { QuadrigeConfigService, QuadrigeConfig } from '../services/quadrige-config.service';
+import { QuadrigeConfigService, QuadrigeConfig } from '../../services/quadrige-config.service';
 
 
 // 🔹 Interface manquante — nécessaire pour éviter les erreurs TS

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { QuadrigeConfigService } from '../services/quadrige-config.service';
+import { QuadrigeConfigService } from '../../services/quadrige-config.service';
 
 @Component({
   selector: 'app-program-extraction-filter',

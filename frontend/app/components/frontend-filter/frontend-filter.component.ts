@@ -5,7 +5,7 @@ import {
   FormControl,
   Validators
 } from '@angular/forms';
-import { QuadrigeConfigService } from '../services/quadrige-config.service';
+import { QuadrigeConfigService } from '../../services/quadrige-config.service';
 
 @Component({
   selector: 'app-frontend-filter',

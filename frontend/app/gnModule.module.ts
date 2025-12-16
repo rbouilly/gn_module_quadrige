@@ -26,10 +26,10 @@ import { GN2CommonModule } from '@geonature_common/GN2Common.module';
 import { QuadrigeConfigService } from './services/quadrige-config.service';
 
 // Components
-import { ProgrammeListComponent } from './programme-list/programme-list.component';
-import { FrontendFilterComponent } from './frontend-filter/frontend-filter.component';
-import { ProgramExtractionFilterComponent } from './program-extraction-filter/program-extraction-filter.component';
-import { ExtractedLinksComponent } from './extracted-links/extracted-links.component';
+import { ProgrammeListComponent } from './components/programme-list/programme-list.component';
+import { FrontendFilterComponent } from './components/frontend-filter/frontend-filter.component';
+import { ProgramExtractionFilterComponent } from './components/program-extraction-filter/program-extraction-filter.component';
+import { ExtractedLinksComponent } from './components/extracted-links/extracted-links.component';
 
 // ROUTES — exactement comme MONITORINGS
 const routes: Routes = [
