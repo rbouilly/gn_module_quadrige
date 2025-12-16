@@ -34,5 +34,4 @@ def upgrade():
 def downgrade():
     op.execute("""
         DELETE FROM gn_permissions.t_objects WHERE code_object = 'QUADRIGE';
-        DELETE FROM gn_commons.t_modules WHERE module_code = 'QUADRIGE';
     """)
